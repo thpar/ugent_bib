@@ -5,3 +5,5 @@ package = UGent
 
 
 configure = admin/config/content/ugent_bib
+
+stylesheets[all][] = css/reflinks.css
