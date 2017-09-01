@@ -1,0 +1,7 @@
+name = UGent Bibliography
+description = Makes API calls to the Ghent University Academic Bibliography (https://biblio.ugent.be/)
+core = 7.x
+package = UGent
+
+
+configure = admin/config/content/ugent_bib

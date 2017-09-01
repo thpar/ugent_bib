@@ -1,0 +1,234 @@
+<?php
+  /**
+   * @file
+   * A module that connects to the UGent Bibliography API and 
+   * can show all of a group's publications on a page, or publications 
+   * of a single author in a block.
+   */
+
+define("UGENT_BIB_QUERY", "https://biblio.ugent.be/person/%ugent_id%/publication/export?format=json");
+
+
+  /**
+   * Implements hook_help().
+   *
+   * Displays help and module information.
+   *
+   * @param path 
+   *   Which path of the site we're using to display help
+   * @param arg 
+   *   Array that holds the current path as returned from arg() function
+   */
+function ugent_bib_help($path, $arg){
+  switch ($path) {
+  case "admin/help#ugent_bib":
+    return t("This module uses the UGent Bibliography API to display papers by group or by author."); 
+    break; 
+  }
+  }
+
+/**
+ * Implements hook_block_info().
+ */
+function ugent_bib_block_info() {
+  $blocks['ugent_bib'] = array(
+			       'info' => t('UGent Bibliography'),
+			       'cache' => DRUPAL_CACHE_PER_ROLE,
+			       );
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function ugent_bib_menu() {
+  $items = array();
+
+  $items['admin/config/content/ugent_bib'] = array(
+						       'title' => 'UGent Bibliography',
+						       'description' => 'Configuration for UGent Bibliography module',
+						       'page callback' => 'drupal_get_form',
+						       'page arguments' => array('ugent_bib_form'),
+						       'access arguments' => array('access administration pages'),
+						       'type' => MENU_NORMAL_ITEM,
+						       );
+  $items['publications'] = array(
+				 'title' => 'Publications',
+				 'page callback' => '_ugent_bib_page',
+				 'access arguments' => array('access ugent_bib content'),
+				 'type' => MENU_NORMAL_ITEM,
+				 );
+  return $items;
+}
+
+/**
+ * Page callback: Current posts settings
+ *
+ * @see current_posts_menu()
+ */
+function ugent_bib_form($form, &$form_state) {
+  $ugent_bib_citation_styles = array('vancouver' => 'vancouver',    //produces two divs, one for numbering?
+				     'apa' => 'apa',                //default
+				     'mla' => 'mla',
+				     'chicago-author-date' => 'chicago-author-date',
+				     'fwo' => 'fwo',					  
+				     );
+
+  $form['ugent_bib_default_ugent_id'] = array(
+				     '#type' => 'textfield',
+				     '#title' => t('Default UGent Author ID'),
+				     '#default_value' => variable_get('ugent_bib_default_ugent_id', ''),
+				     '#size' => 15,
+				     '#maxlength' => 15,
+				     '#description' => t('The UGent ID to be used on a full page publication display.'),
+				     '#required' => TRUE,
+				     );
+  $form['ugent_bib_citation_style'] = array(
+					    '#type' => 'select',
+					    '#title' => t('Citation style'),
+					    '#default_value' => variable_get('ugent_bib_citation_style', 'apa'),
+					    '#options' => $ugent_bib_citation_styles,
+					    '#description' => t('Pre-formatted citation style as stored in the UGent database.'),
+					    '#required' => TRUE,
+					    );
+
+  return system_settings_form($form);
+}
+
+/**
+ * @param $ugent_id Student/Personnel ID at UGent
+ * 
+ * @return 
+ *   An array of JSON strings containing the publications of given author
+ */
+function ugent_bib_get_papers($ugent_id){
+  $url = str_replace('%ugent_id%', $ugent_id, UGENT_BIB_QUERY);
+  $handle = fopen($url, 'r');
+  $entries = array();
+  while (($line = fgets($handle)) !== false) {
+    $entries[] = $line;
+  }
+  fclose($handle);
+  
+  return $entries;
+}
+
+/**
+ * Formats a JSON publication string as reference
+ *
+ * @param $json_pub a one line json entry representing a publication
+ *
+ * @return A reference in HTML format 
+ */
+function ugent_bib_parse_reference($json_pub){
+  $json = json_decode($json_pub, TRUE);
+  $citation_style = variable_get('ugent_bib_citation_style', 'apa');
+  $ref = $json['cite'][$citation_style];
+  return $ref;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * Prepares the contents of the block.
+ *
+ */
+function ugent_bib_block_view($delta = '') {
+  switch ($delta) {
+  case 'ugent_bib':
+    $block['subject'] = t('Publications');
+    if (user_access('access content')) {
+      $result = array();
+
+      //check if we're on a user or node page
+      //and if the UGent ID is defined
+      $user = menu_get_object('user');
+      $node = menu_get_object();
+      if ($user != null && property_exists($user, "field_ugent_id")) {
+	if (array_key_exists('und', $user->field_ugent_id)){
+	  $user_id = $user->field_ugent_id['und'][0]['value'];
+	  if (!empty($user_id)){
+	    $result = ugent_bib_get_papers($user_id);
+	  }
+	}
+      } else if ($node != null && property_exists($node, "field_ugent_id")) {
+        if (array_key_exists('und', $node->field_ugent_id)){
+          $user_id = $node->field_ugent_id['und'][0]['value'];
+          if (!empty($user_id)){
+            $result = ugent_bib_get_papers($user_id);
+          }
+        }
+      } else {
+	$user_id = variable_get('ugent_bib_default_ugent_id', '');
+	$result = ugent_bib_get_papers($user_id);
+      }
+      
+      
+      $items = array();
+      foreach ($result as $pub) {
+	$items[] = array(
+			 'data' => ugent_bib_parse_reference($pub),
+			 ); 
+      }
+      // No papers found
+      if (empty($items)) {
+	$block['content'] = t('No publications to display.');  
+      } 
+      else {
+	// Pass data through theme function.
+	$block['content'] = theme('item_list', array(
+						     'items' => $items,
+						     'type' => 'ol',
+						     'attributes' => array('reversed'=>'reversed'),
+						     ));
+      }
+    }
+    return $block;
+  }
+  
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ugent_bib_permission() {
+  return array(
+	       'access ugent_bib content' => array(
+						   'title' => t('Access content for the UGent Bibliography module'),
+						   )
+	       );
+}
+
+/**
+ * Custom page callback function, declared in ugent_bib_menu().
+ */
+function _ugent_bib_page() {
+  $user_id = variable_get('ugent_bib_default_ugent_id', '');
+  $result = ugent_bib_get_papers($user_id);
+    
+  $items = array();
+  foreach ($result as $pub) {
+    $items[] = array(
+		     'data' => ugent_bib_parse_reference($pub),
+		     );
+    
+  }
+  
+  if (empty($items)) { 
+    $page_array['ugent_bib_arguments'] = array(					      
+					       '#title' => t('Publications'),
+					       '#markup' => t('No publications to display.'),
+					       );
+    return $page_array;  
+  } else {
+    $page_array['ugent_bib_arguments'] = array(
+					       '#title' => t('Publications'),
+					       '#items' => $items,
+					       '#theme' => 'item_list__ugent_bib',
+					       '#type' => 'ol',
+					       '#attributes' => array('reversed' => 'reversed'),
+					       );
+    return $page_array;
+  }
+}
