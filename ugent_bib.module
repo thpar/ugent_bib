@@ -131,15 +131,19 @@ function ugent_bib_parse_reference($json_pub){
   $citation_style = variable_get('ugent_bib_citation_style', 'apa');
 
   $ref = $json['cite'][$citation_style];
-  $doi = $json['doi'][0];
+  if (array_key_exists('doi', $json)){
+    $doi = $json['doi'][0];
+  }
   $biblio = $json['_id'];
-  $abstract = $json['abstract'];
+  //$abstract = $json['abstract'];
 
   $html = '<div class="ugent-bib-ref">';
   $html.= $ref;
   $html.= '<div class="ugent-bib-ref-links">';
   $html.= l("<i class=\"fa fa-bank\"></i>", UGENT_BIB_PUBLICATION.$biblio, array("title" => "Biblio", "html" => TRUE));
-  $html.= l("<i class=\"fa fa-external-link\"></i>", UGENT_BIB_DOI.$doi, array("title" => "DOI", "html" => TRUE));
+  if (!empty($doi)){
+    $html.= l("<i class=\"fa fa-external-link\"></i>", UGENT_BIB_DOI.$doi, array("title" => "DOI", "html" => TRUE));
+  }
   $html.= '</div>';
   $html.= '</div>';
   return $html;
