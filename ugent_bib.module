@@ -6,7 +6,11 @@
    * of a single author in a block.
    */
 
-define("UGENT_BIB_QUERY", "https://biblio.ugent.be/person/%ugent_id%/publication/export?format=json");
+define("UGENT_BIB_BASE_URL", "https://biblio.ugent.be");
+define("UGENT_BIB_QUERY", UGENT_BIB_BASE_URL."/person/%ugent_id%/publication/export?format=json");
+define("UGENT_BIB_PUBLICATION", UGENT_BIB_BASE_URL."/publication/");
+define("UGENT_BIB_DOI", "http://dx.doi.org/");
+
 
 
   /**
@@ -68,7 +72,7 @@ function ugent_bib_menu() {
  * @see current_posts_menu()
  */
 function ugent_bib_form($form, &$form_state) {
-  $ugent_bib_citation_styles = array('vancouver' => 'vancouver',    //produces two divs, one for numbering?
+  $citation_styles = array('vancouver' => 'vancouver',    //produces two divs, one for numbering?
 				     'apa' => 'apa',                //default
 				     'mla' => 'mla',
 				     'chicago-author-date' => 'chicago-author-date',
@@ -88,7 +92,7 @@ function ugent_bib_form($form, &$form_state) {
 					    '#type' => 'select',
 					    '#title' => t('Citation style'),
 					    '#default_value' => variable_get('ugent_bib_citation_style', 'apa'),
-					    '#options' => $ugent_bib_citation_styles,
+					    '#options' => $citation_styles,
 					    '#description' => t('Pre-formatted citation style as stored in the UGent database.'),
 					    '#required' => TRUE,
 					    );
@@ -123,9 +127,22 @@ function ugent_bib_get_papers($ugent_id){
  */
 function ugent_bib_parse_reference($json_pub){
   $json = json_decode($json_pub, TRUE);
+
   $citation_style = variable_get('ugent_bib_citation_style', 'apa');
+
   $ref = $json['cite'][$citation_style];
-  return $ref;
+  $doi = $json['doi'][0];
+  $biblio = $json['_id'];
+  $abstract = $json['abstract'];
+
+  $html = '<div class="ugent-bib-ref">';
+  $html.= $ref;
+  $html.= '<div class="ugent-bib-ref-links">';
+  $html.= l("<i class=\"fa fa-bank\"></i>", UGENT_BIB_PUBLICATION.$biblio, array("title" => "Biblio", "html" => TRUE));
+  $html.= l("<i class=\"fa fa-external-link\"></i>", UGENT_BIB_DOI.$doi, array("title" => "DOI", "html" => TRUE));
+  $html.= '</div>';
+  $html.= '</div>';
+  return $html;
 }
 
 /**
