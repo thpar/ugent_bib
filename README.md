@@ -1,6 +1,6 @@
 ## UGent Bibliography ###
 
-This Drupal module uses the API of [Ghent University Academic Bibliography]['biblio'] to fetch publications
+This Drupal module uses the API of [Ghent University Academic Bibliography][biblio] to fetch publications
 of a given UGent student or personnel member and display them as a block or a page on a Drupal site.
 
 The module creates a block that can be added to any node or user-page. If it can find a field `field_ugent_id` in the bundle, 
