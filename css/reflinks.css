@@ -1,3 +1,32 @@
+/*
+.ugent-bib-ref-links::before{
+    content: "[ ";
+}
+.ugent-bib-ref-links::after{
+    content: " ]";
+}
+*/
+
+.ugent-bib-ref{
+    padding-bottom: 0.7em;
+}
+
 .ugent-bib-ref-links{
-    color: black;
+    display: inline;
+    text-align: right;
+    margin-left: 0.7em;
+    border-bottom: 1px solid gray;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    border-radius: 3px;
+    font-size: small;
+}
+
+.ugent-bib-ref-links i{
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.ugent-bib-ref-links a{
+    color: gray;
 }
