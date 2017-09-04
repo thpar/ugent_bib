@@ -1,19 +1,9 @@
-/*
-.ugent-bib-ref-links::before{
-    content: "[ ";
-}
-.ugent-bib-ref-links::after{
-    content: " ]";
-}
-*/
-
-.ugent-bib-ref{
+.ugent-bib{
     padding-bottom: 0.7em;
 }
 
-.ugent-bib-ref-links{
+.ugent-bib-links{
     display: inline;
-    text-align: right;
     margin-left: 0.7em;
     border-bottom: 1px solid gray;
     border-left: 1px solid gray;
@@ -22,11 +12,9 @@
     font-size: small;
 }
 
-.ugent-bib-ref-links i{
+
+.ugent-bib-links a{
     padding-left: 3px;
     padding-right: 3px;
-}
-
-.ugent-bib-ref-links a{
     color: gray;
 }

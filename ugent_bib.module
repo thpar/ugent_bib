@@ -137,12 +137,14 @@ function ugent_bib_parse_reference($json_pub){
   $biblio = $json['_id'];
   //$abstract = $json['abstract'];
 
-  $html = '<div class="ugent-bib-ref">';
+  $html = '<div class="ugent-bib">';
+  $html.= '<div class="ugent-bib-ref">';
   $html.= $ref;
-  $html.= '<div class="ugent-bib-ref-links">';
-  $html.= l("<i class=\"fa fa-bank\"></i>", UGENT_BIB_PUBLICATION.$biblio, array("title" => "Biblio", "html" => TRUE));
+  $html.= '</div>';
+  $html.= '<div class="ugent-bib-links">';
+  $html.= l("<i class=\"fa fa-bank\"></i>", UGENT_BIB_PUBLICATION.$biblio, array("attributes" => array("title" => "UGent Biblio"), "html" => TRUE));
   if (!empty($doi)){
-    $html.= l("<i class=\"fa fa-external-link\"></i>", UGENT_BIB_DOI.$doi, array("title" => "DOI", "html" => TRUE));
+    $html.= l("<i class=\"fa fa-external-link\"></i>", UGENT_BIB_DOI.$doi, array("attributes" => array("title" => "DOI"), "html" => TRUE));
   }
   $html.= '</div>';
   $html.= '</div>';
@@ -253,3 +255,4 @@ function _ugent_bib_page() {
     return $page_array;
   }
 }
+
