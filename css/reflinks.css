@@ -2,6 +2,17 @@
     padding-bottom: 0.7em;
 }
 
+.ugent-bib-ref{
+    cursor: pointer;
+}
+
+.ugent-bib-abstract{
+    display: none;
+    border: 1px solid gray;
+    background-color: #f7fafc;
+    padding: 1em;
+}
+
 .ugent-bib-links{
     display: inline;
     margin-left: 0.7em;
