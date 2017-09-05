@@ -168,6 +168,7 @@ function ugent_bib_parse_reference($json_pub){
  *
  */
 function ugent_bib_block_view($delta = '') {
+  drupal_add_js('http://use.fontawesome.com/f479fb1064.js', array('type' => 'external'));
   switch ($delta) {
   case 'ugent_bib':
     $block['subject'] = t('Publications');
@@ -237,6 +238,7 @@ function ugent_bib_permission() {
  * Custom page callback function, declared in ugent_bib_menu().
  */
 function _ugent_bib_page() {
+  drupal_add_js('http://use.fontawesome.com/f479fb1064.js', array('type' => 'external'));
   $user_id = variable_get('ugent_bib_default_ugent_id', '');
   $result = ugent_bib_get_papers($user_id);
     
