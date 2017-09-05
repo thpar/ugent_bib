@@ -140,7 +140,9 @@ function ugent_bib_parse_reference($json_pub){
   }
 
   $html = '<div class="ugent-bib">';
-  $html.= '<div class="ugent-bib-ref">';
+
+  $ugent_bib_ref_clickable = empty($abstract)? "":"ugent-bib-clickable";
+  $html.= "<div class=\"ugent-bib-ref $ugent_bib_ref_clickable\">";
   $html.= $ref;
   if (!empty($abstract)) {
     $html.= "<div class=\"ugent-bib-abstract\">$abstract</div>";
@@ -148,7 +150,7 @@ function ugent_bib_parse_reference($json_pub){
   $html.= '</div>';
   $html.= '<div class="ugent-bib-links">';
   if (!empty($abstract)){
-    $html.= l("<i class=\"ugent-bib-a\">A</i>", '', array("attributes" => array("title" => "Show abstract", "class" => "ugent-bib-abstract-link"), "html" => TRUE));
+    $html.= l("<i>A</i>", '', array("attributes" => array("title" => "Show abstract", "class" => "ugent-bib-abstract-link"), "html" => TRUE));
   }
   $html.= l("<i class=\"fa fa-bank\"></i>", UGENT_BIB_PUBLICATION.$biblio, array("attributes" => array("title" => "UGent Biblio"), "html" => TRUE));
   if (!empty($doi)){
