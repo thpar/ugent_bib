@@ -172,7 +172,7 @@ function ugent_bib_block_view($delta = '') {
   switch ($delta) {
   case 'ugent_bib':
     $block['subject'] = t('Publications');
-    if (user_access('access content')) {
+    if (user_access('access ugent_bib content')) {
       $result = array();
 
       //check if we're on a user or node page
