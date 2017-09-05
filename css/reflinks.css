@@ -24,12 +24,12 @@
 }
 
 
-.ugent-bib-links a, .ugent-bib-a{
+.ugent-bib-links a{
     padding-left: 3px;
     padding-right: 3px;
     color: gray;
 }
 
-.ugent-bib-a {
+.ugent-bib-abstract-link {
     font-weight: bold;
 }
