@@ -7,7 +7,8 @@
    */
 
 define("UGENT_BIB_BASE_URL", "https://biblio.ugent.be");
-define("UGENT_BIB_QUERY", UGENT_BIB_BASE_URL."/person/%ugent_id%/publication/export?format=json");
+define("UGENT_BIB_AUTHOR_QUERY", UGENT_BIB_BASE_URL."/person/%ugent_id%/publication/export?format=json");
+define("UGENT_BIB_PROJECT_QUERY", UGENT_BIB_BASE_URL."/project/%ugent_id%/publication/export?format=json");
 define("UGENT_BIB_PUBLICATION", UGENT_BIB_BASE_URL."/publication/");
 define("UGENT_BIB_DOI", "http://dx.doi.org/");
 
@@ -79,9 +80,19 @@ function ugent_bib_form($form, &$form_state) {
 				     'fwo' => 'fwo',					  
 				     );
 
+  $form['ugent_bib_query_type'] = array(
+					'#type' => 'radios',
+					'#title' => t('Query type'),
+					'#default_value' => variable_get('ugent_bib_query_type', 'person'),
+					'#options' => array('person' => 'Person', 'project' => 'Project'),
+					'#description' => t('Is the default UGent ID referring to an author or to a project?'),
+					'#required' => TRUE,
+					);
+
+
   $form['ugent_bib_default_ugent_id'] = array(
 				     '#type' => 'textfield',
-				     '#title' => t('Default UGent Author ID'),
+				     '#title' => t('Default UGent ID'),
 				     '#default_value' => variable_get('ugent_bib_default_ugent_id', ''),
 				     '#size' => 15,
 				     '#maxlength' => 15,
@@ -107,7 +118,17 @@ function ugent_bib_form($form, &$form_state) {
  *   An array of JSON strings containing the publications of given author
  */
 function ugent_bib_get_papers($ugent_id){
-  $url = str_replace('%ugent_id%', $ugent_id, UGENT_BIB_QUERY);
+  switch(variable_get('ugent_bib_query_type', 'person')){
+  default:
+  case "person": 
+    $query_string = UGENT_BIB_AUTHOR_QUERY;
+    break;
+  case "project":
+    $query_string = UGENT_BIB_PROJECT_QUERY;
+    break;
+  }
+
+  $url = str_replace('%ugent_id%', $ugent_id, $query_string);
   $handle = fopen($url, 'r');
   $entries = array();
   while (($line = fgets($handle)) !== false) {
