@@ -173,9 +173,9 @@ function ugent_bib_parse_reference($json_pub){
   if (!empty($abstract)){
     $html.= l("<i>A</i>", '', array("attributes" => array("title" => "Show abstract", "class" => "ugent-bib-abstract-link"), "html" => TRUE));
   }
-  $html.= l("<i class=\"fa fa-bank\"></i>", UGENT_BIB_PUBLICATION.$biblio, array("attributes" => array("title" => "UGent Biblio"), "html" => TRUE));
+  $html.= l("<i class=\"fa fa-bank\"></i>", UGENT_BIB_PUBLICATION.$biblio, array("attributes" => array("title" => "UGent Biblio", "target" => '_blank'), "html" => TRUE));
   if (!empty($doi)){
-    $html.= l("<i class=\"fa fa-external-link\"></i>", UGENT_BIB_DOI.$doi, array("attributes" => array("title" => "DOI"), "html" => TRUE));
+    $html.= l("<i class=\"fa fa-external-link\"></i>", UGENT_BIB_DOI.$doi, array("attributes" => array("title" => "DOI", "target" => '_blank'), "html" => TRUE));
   }
   $html.= '</div>';
   $html.= '</div>';
