@@ -1,12 +1,12 @@
-1<?php
-    /**
-     * @file
-     * A module that connects to the UGent Bibliography API and 
-     * can show all of a group's publications on a page, or publications 
-     * of a single author in a block.
-     */
+<?php
+/**
+ * @file
+ * A module that connects to the UGent Bibliography API and 
+ * can show all of a group's publications on a page, or publications 
+ * of a single author in a block.
+ */
 
-    define("UGENT_BIB_BASE_URL", "https://biblio.ugent.be");
+define("UGENT_BIB_BASE_URL", "https://biblio.ugent.be");
 define("UGENT_BIB_AUTHOR_QUERY", UGENT_BIB_BASE_URL."/person/%ugent_id%/publication/export?format=json");
 define("UGENT_BIB_PROJECT_QUERY", UGENT_BIB_BASE_URL."/project/%ugent_id%/publication/export?format=json");
 define("UGENT_BIB_PUBLICATION", UGENT_BIB_BASE_URL."/publication/");
