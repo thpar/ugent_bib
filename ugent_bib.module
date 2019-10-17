@@ -94,8 +94,8 @@ function ugent_bib_form($form, &$form_state) {
         '#type' => 'textfield',
         '#title' => t('Default UGent ID'),
         '#default_value' => variable_get('ugent_bib_default_ugent_id', ''),
-        '#size' => 40,
-        '#maxlength' => 40,
+        '#size' => 15,
+        '#maxlength' => 15,
         '#description' => t('The UGent ID to be used on a full page publication display.'),
         '#required' => TRUE,
     );
@@ -129,17 +129,14 @@ function ugent_bib_get_papers($ugent_id){
     }
 
     $url = str_replace('%ugent_id%', $ugent_id, $query_string);
-    
     $handle = fopen($url, 'r');
     $entries = array();
     while (($line = fgets($handle)) !== false) {
         $entries[] = $line;
     }
     fclose($handle);
-
-    $result = implode(' ',$entries);
-    $json = json_decode($result, TRUE);
-    return $json;
+  
+    return $entries;
 }
 
 /**
@@ -149,7 +146,9 @@ function ugent_bib_get_papers($ugent_id){
  *
  * @return A reference in HTML format 
  */
-function ugent_bib_parse_reference($json){
+function ugent_bib_parse_reference($json_pub){
+    $json = json_decode($json_pub, TRUE);
+
     $citation_style = variable_get('ugent_bib_citation_style', 'apa');
 
     $ref = $json['cite'][$citation_style];
